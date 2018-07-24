@@ -53,9 +53,9 @@ public class Main {
     public void startDirectDeviceSession() throws IOException {
         DeviceFarmClient client = new DeviceFarmClient(new ProfileCredentialsProvider(profile));
 
-        System.out.println("==> Getting an Android private device from your device pool.");
+        System.out.println("\n==> Getting an Android private device from your device pool.");
         DeviceInstance androidDevice = client.getAndroidPhone(timeOutInSeconds);
-        System.out.println("==> Device obtained: " + androidDevice);
+        System.out.println("\n==> Device obtained: " + androidDevice);
 
         //@formatter:off
         DirectDeviceAccessCapabilities caps = new DirectDeviceAccessCapabilities()
@@ -66,14 +66,14 @@ public class Main {
         //@formatter:on
 
         DirectDeviceSession session = client.createDirectDeviceAccessSession(caps);
-        System.out.println("==> Session Created: " + session.toString());
+        System.out.println("\n==> Session Created: " + session.toString());
 
-        System.out.println("==> Hit enter to close session...");
+        System.out.println("\n==> Hit enter to close session...");
         System.in.read();
 
-        System.out.println("==> Stopping session...");
+        System.out.println("\n==> Stopping session...");
         client.stopDirectDeviceAccessSession(session);
-        System.out.println("==> Session stopped");
+        System.out.println("\n==> Session stopped");
 
     }
 

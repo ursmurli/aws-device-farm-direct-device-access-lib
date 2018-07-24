@@ -105,7 +105,7 @@ public class DeviceFarmClient {
      * @return {@link RemoteAccessSession}
      */
     public RemoteAccessSession stopDirectDeviceAccessSession(DirectDeviceSession session) {
-        session.getTunnel().stop();
+        session.getTunnel().stopTunnel();
         return stopRemoteAccessSession(session.getRemoteAccessSession());
     }
 

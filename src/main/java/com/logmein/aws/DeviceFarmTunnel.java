@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.time.Instant;
 
 import org.apache.commons.exec.CommandLine;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +67,23 @@ public class DeviceFarmTunnel {
      */
     private Executor executor;
 
+    private File location;
+
     /**
      * Constructor.
      * @param hostIp the rmeote host to which the tunnel is being created.
      */
     public DeviceFarmTunnel(final String hostIp) {
         ipAddress = hostIp;
+        location = createTunnelDirectory();
+        addShutDownHookToStopTunnelAndDeleteFile();
+    }
+
+    /**
+     * @return {@link File} - location of tunnel file.
+     */
+    public File getLocation() {
+        return location;
     }
 
     /**
@@ -114,11 +126,29 @@ public class DeviceFarmTunnel {
     /**
      * Stop the tunnel.
      */
-    public void stop() {
+    public void stopTunnel() {
         if (executor == null) {
             logger.warn("Tunnel was not started, so nothing to stop.");
+        } else {
+            executor.stopSilently();
         }
-        executor.stopSilently();
+        FileUtils.deleteQuietly(location);
+    }
+
+    /**
+     * Shutdown hook to stop the tunnel and delete the folder.
+     */
+    private void addShutDownHookToStopTunnelAndDeleteFile() {
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            /**
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                stopTunnel();
+
+            }
+        });
     }
 
     /**
@@ -170,8 +200,7 @@ public class DeviceFarmTunnel {
             throw new DeviceFarmException("Unsupported OS for direct device access.");
         }
 
-        File destinationDir = createTunnelDirectory();
-        File tunnelZipFile = new File(destinationDir, resourceFilePath);
+        File tunnelZipFile = new File(location, resourceFilePath);
 
         InputStream is = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
