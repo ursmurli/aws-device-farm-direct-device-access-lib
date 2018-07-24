@@ -26,7 +26,7 @@ import net.lingala.zip4j.exception.ZipException;
  */
 public class DeviceFarmTunnel {
 
-    private static final String MAC_TUNNEL_FILE_NAME = "aws-device-farm-tunnel";
+    public static final String TUNNEL_FILE_NAME = "aws-device-farm-tunnel";
 
     private static final int BYTES = 1024;
 
@@ -34,12 +34,14 @@ public class DeviceFarmTunnel {
 
     private static final String SUCCESS_MSG = "Use `ctrl + c` to stop the daemon";
 
+    public static final String TUNNEL_ROOT_DIR = "DirectDeviceAccessTunnels";
+
     /**
-     * @return
+     * @return the root directory where the tunnel files are saved.
      */
     private static synchronized File getRootTunnelDir() {
         String userHome = System.getProperty("user.home");
-        File root = new File(userHome, "DirectDeviceAccessTunnels");
+        File root = new File(userHome, TUNNEL_ROOT_DIR);
         if (!root.exists()) {
             if (!root.mkdirs()) {
                 throw new DeviceFarmException("Failed to create dir: " + root.getAbsolutePath());
@@ -50,7 +52,7 @@ public class DeviceFarmTunnel {
     }
 
     /**
-     * logger.
+     * Logger.
      */
     private Logger logger = LoggerFactory.getLogger(DeviceFarmTunnel.class);
 
@@ -66,21 +68,19 @@ public class DeviceFarmTunnel {
 
     /**
      * Constructor.
-     * @param hostIp
+     * @param hostIp the rmeote host to which the tunnel is being created.
      */
     public DeviceFarmTunnel(final String hostIp) {
         ipAddress = hostIp;
     }
 
+    /**
+     * Start the tunnel.
+     * @param dir {@link AWSDirectory}.
+     */
     public void start(AWSDirectory dir) {
-        File tunnleZip = getTunnel();
-        logger.info("Tunnel file: {}", tunnleZip);
-
-        // unzip the file
-        unzip(tunnleZip.getAbsolutePath(), tunnleZip.getParentFile().getAbsolutePath());
-
-        File tunnelFile = new File(tunnleZip.getParentFile(), MAC_TUNNEL_FILE_NAME);
-        tunnelFile.setExecutable(true);
+        File tunnelFile = getTunnel();
+        logger.debug("Tunnel file: {}", tunnelFile.getAbsolutePath());
 
         // start the tunnel.
         CommandLine command = new CommandLine(tunnelFile);
@@ -122,14 +122,14 @@ public class DeviceFarmTunnel {
     }
 
     /**
-     * @return
+     * @return {@link File} folder where the tunnel file is saved.
      */
-    private File createDestination() {
+    private File createTunnelDirectory() {
         File tunnelDir = new File(getRootTunnelDir(), ipAddress.trim());
         if (tunnelDir.exists()) {
             return tunnelDir;
         }
-        logger.info("Creating tunnel dir at: {}", tunnelDir.getAbsolutePath());
+        logger.debug("Creating tunnel dir at: {}", tunnelDir.getAbsolutePath());
         if (!tunnelDir.mkdir()) {
             throw new DeviceFarmException("Failed to create dir for tunnel file: " + tunnelDir
                     .getAbsolutePath());
@@ -138,9 +138,28 @@ public class DeviceFarmTunnel {
     }
 
     /**
-     * @return
+     * Unzips the file to the given directory.
+     * @param zipFilePath absolute path to the zip file.
+     * @param directoryToExtractTo the directory where the file is to be extracted to.
      */
-    private File getTunnel() {
+    private void unzip(final String zipFilePath, final String directoryToExtractTo) {
+        try {
+            ZipFile zipFile = new ZipFile(zipFilePath);
+            zipFile.extractAll(directoryToExtractTo);
+        } catch (ZipException e) {
+            StringBuilder str = new StringBuilder();
+            str.append("Failed to unzip the file: ");
+            str.append(zipFilePath);
+            str.append(" to: ");
+            str.append(directoryToExtractTo);
+            throw new DeviceFarmException(str.toString(), e);
+        }
+    }
+
+    /**
+     * @return The tunnel file.
+     */
+    protected File getTunnel() {
         String resourceFilePath = "";
 
         if (SystemUtils.IS_OS_MAC) {
@@ -151,8 +170,8 @@ public class DeviceFarmTunnel {
             throw new DeviceFarmException("Unsupported OS for direct device access.");
         }
 
-        File destinationDir = createDestination();
-        File destination = new File(destinationDir, resourceFilePath);
+        File destinationDir = createTunnelDirectory();
+        File tunnelZipFile = new File(destinationDir, resourceFilePath);
 
         InputStream is = null;
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -178,7 +197,7 @@ public class DeviceFarmTunnel {
 
         OutputStream out;
         try {
-            out = new FileOutputStream(destination);
+            out = new FileOutputStream(tunnelZipFile);
         } catch (FileNotFoundException e) {
             throw new DeviceFarmException("Unable to get the tunnel file.", e);
         }
@@ -203,26 +222,13 @@ public class DeviceFarmTunnel {
                 throw new DeviceFarmException("Unable to get the tunnel file.", e);
             }
         }
-        return destination;
-    }
 
-    /**
-     * Unzips the file to the given directory.
-     * @param zipFilePath absolute path to the zip file.
-     * @param directoryToExtractTo the directory where the file is to be extracted to.
-     */
-    private void unzip(final String zipFilePath, final String directoryToExtractTo) {
-        try {
-            ZipFile zipFile = new ZipFile(zipFilePath);
-            zipFile.extractAll(directoryToExtractTo);
-        } catch (ZipException e) {
-            StringBuilder str = new StringBuilder();
-            str.append("Failed to unzip the file: ");
-            str.append(zipFilePath);
-            str.append(" to: ");
-            str.append(directoryToExtractTo);
-            throw new DeviceFarmException(str.toString(), e);
-        }
+        // unzip the file
+        unzip(tunnelZipFile.getAbsolutePath(), tunnelZipFile.getParentFile().getAbsolutePath());
+
+        File tunnelFile = new File(tunnelZipFile.getParentFile(), TUNNEL_FILE_NAME);
+        tunnelFile.setExecutable(true);
+        return tunnelFile;
     }
 
 }

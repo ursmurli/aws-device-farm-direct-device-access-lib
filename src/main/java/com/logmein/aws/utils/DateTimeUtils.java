@@ -3,7 +3,7 @@ package com.logmein.aws.utils;
 public class DateTimeUtils {
 
     /**
-     * @param milliSeconds
+     * @param milliSeconds time to sleep in milli seconds.
      */
     public static void sleep(long milliSeconds) {
         try {

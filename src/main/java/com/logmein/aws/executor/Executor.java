@@ -134,7 +134,6 @@ public class Executor {
 
     /**
      * Execute the command.
-     * @throws com.logmein.automation.executor.ExecutorException
      */
     public void execute() {
         try {

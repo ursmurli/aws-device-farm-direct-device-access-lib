@@ -9,9 +9,9 @@ import java.nio.file.Files;
  */
 public class AWSDirectory {
 
-    private static final String PRI_KEY_PEM = "prikey.pem";
+    public static final String PRI_KEY_PEM = "prikey.pem";
 
-    private static final String PUB_KEY_PUB = "pubkey.pub";
+    public static final String PUB_KEY_PUB = "pubkey.pub";
 
     /**
      * @return the default .aws directory.
@@ -75,14 +75,14 @@ public class AWSDirectory {
     }
 
     /**
-     * @return
+     * @return the location of the .aws directory.
      */
     public File getLocation() {
         return awsDir;
     }
 
     /**
-     * return the private key File.
+     * @return the private key File.
      */
     public File getPrivateKey() {
         File priKey = new File(getDeviceFarm(), PRI_KEY_PEM);
@@ -109,7 +109,7 @@ public class AWSDirectory {
     /**
      * @return the public key as String.
      */
-    public String getPublicKeyString() {
+    public String getPublicKeyContents() {
         File publicKey = getPublicKey();
         String contents = "";
         try {
@@ -122,7 +122,7 @@ public class AWSDirectory {
     }
 
     /**
-     * @return
+     * @return 'devicefarm' folder.
      */
     private File getDeviceFarm() {
         File deviceFarm = new File(getLocation(), "devicefarm");
