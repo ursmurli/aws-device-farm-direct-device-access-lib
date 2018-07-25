@@ -18,7 +18,7 @@
    <!-- **************** PROJECT INFO **************** -->
    <!-- ********************************************** -->
 
-   <groupId>com.logmein.aws</groupId>
+   <groupId> io.github.piranhateam.aws</groupId>
    <artifactId>aws-device-farm-direct-device-access-lib</artifactId>
    <version>1.0.0-SNAPSHOT</version>
    <packaging>jar</packaging>
