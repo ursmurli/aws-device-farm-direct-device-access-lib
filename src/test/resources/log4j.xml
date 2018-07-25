@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{ABSOLUTE} [%t] %-5p %c{1} - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender name="APPLOGFILE" class="org.apache.log4j.RollingFileAppender">
+        <param name="File"   value="DeviceFarm.log" />
+        <param name="Append" value="true" />
+        <param name="MaxFileSize" value="3000KB" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{ABSOLUTE} [%t] %-5p %c{1} - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+
+    <root>
+        <level value="info"/>
+        <appender-ref ref="APPLOGFILE"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</log4j:configuration>
