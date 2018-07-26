@@ -19,6 +19,10 @@ before_install:
   - chmod -R +x ~/.scripts/*
   # Prepares CI environment
   - source ~/.scripts/travis/load-travis-environment.sh
+
+install:
+    - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -Denforcer.skip=true
+
 before_script:
   # Creates Maven settings
   - ~/.scripts/java/maven/create-maven-settings.sh $VERSION_TYPE
