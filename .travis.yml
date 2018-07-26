@@ -9,8 +9,8 @@ matrix:
     - jdk: openjdk7
       env: DEPLOY=true
     # Documentation deployed with JDK8
-    - jdk: oraclejdk8
-      env: DEPLOY_DOCS=true
+    #- jdk: oraclejdk8
+    #  env: DEPLOY_DOCS=true
 
 before_install:
   # Gets scripts
@@ -27,6 +27,6 @@ script:
   - mvn clean verify -Denforcer.skip=true
 after_success:
   # Documentation deployment script
-  - ~/.scripts/java/maven/deploy-site.sh $DO_DEPLOY_DOCS deployment
+  # - ~/.scripts/java/maven/deploy-site.sh $DO_DEPLOY_DOCS deployment
   # Code artifacts deployment script
   - ~/.scripts/java/maven/deploy.sh $DO_DEPLOY deployment
