@@ -12,6 +12,8 @@ Before beginning with the new project there are a few things which should be edi
 
 Note that the Maven site is using the [Docs Maven Skin](https://github.com/Bernardo-MG/docs-maven-skin), which will have a few configuration requirements of its own.
 
+[![Travis CI](https://travis-ci.org/PiranhaTeam/aws-device-farm-direct-device-access-lib.svg?branch=master)
+
 [![Maven Central](https://img.shields.io/maven-central/v/com.logmein.aws/aws-device-farm-direct-device-access-lib.svg)][maven-repo]
 [![Bintray](https://api.bintray.com/packages/piranhateam/maven/aws-device-farm-direct-device-access-lib/images/download.svg)][bintray-repo]
 
